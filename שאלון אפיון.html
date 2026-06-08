@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שאלון אפיון אתר תכנון פרישה (CFP)</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #eff6ff;
+            --primary-hover: #172554;
+            --accent: #d97706;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --success: #16a34a;
+            --radius: 16px;
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 32px;
+        }
+
+        .section-tag {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 6px;
+            background-color: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), #3b82f6);
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step-counter {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Question Wrapper */
+        .question-card {
+            min-height: 280px;
+            display: none;
+        }
+
+        .question-card.active {
+            display: block;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        /* Input Elements */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .option-label:hover {
+            border-color: var(--border-hover);
+            background-color: #f8fafc;
+        }
+
+        .option-label input[type="radio"],
+        .option-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-left: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .option-label.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .option-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--text);
+            background-color: #ffffff;
+            outline: none;
+            resize: vertical;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
+        }
+
+        /* Navigation Buttons */
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-t: 1px solid var(--border);
+        }
+
+        button {
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            outline: none;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:disabled {
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.15);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 6px 14px rgba(30, 58, 138, 0.2);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(22, 163, 74, 0.15);
+        }
+
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        /* Summary / End Screen */
+        .end-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .end-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background-color: #dcfce7;
+            color: var(--success);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 24px auto;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .summary-box {
+            background-color: #f1f5f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+            text-align: right;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border: 1px solid var(--border);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Intro Screen */
+        .intro-screen {
+            display: block;
+            text-align: center;
+        }
+
+        .intro-screen.hidden {
+            display: none;
+        }
+
+        .logo-placeholder {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- INTRO SCREEN -->
+    <div id="intro-screen" class="intro-screen">
+        <div class="logo-placeholder">📋</div>
+        <h2>שאלון אפיון קליל ומקצועי לאתר CFP</h2>
+        <p class="subtitle" style="margin-top: 12px;">כדי שנוכל לבנות את האתר המדויק ביותר לעסק שלך, הכנו שאלון קצר וממוקד. חלק מהשאלות הן שאלות סימון מהירות כדי לחסוך לך זמן. בוא נתחיל!</p>
+        <button class="btn-primary" onclick="startQuestionnaire()" style="margin-top: 16px; width: 100%;">מתחילים</button>
+    </div>
+
+    <!-- QUESTIONNAIRE CONTENT (Hidden initially) -->
+    <div id="quiz-content" style="display: none;">
+        <div class="progress-container">
+            <div id="section-tag" class="section-tag">חלק 1</div>
+            <div class="progress-bar-wrapper">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="step-counter" class="step-counter">שאלה 1 מתוך 8</div>
+        </div>
+
+        <div id="questions-container">
+            <!-- Questions will be dynamically rendered here via JavaScript -->
+        </div>
+
+        <div class="nav-controls">
+            <button id="btn-back" class="btn-secondary" onclick="prevStep()" disabled>חזור</button>
+            <button id="btn-next" class="btn-primary" onclick="nextStep()">המשך</button>
+        </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div id="end-screen" class="end-screen">
+        <div class="success-icon">✓</div>
+        <h2>תודה רבה! השאלון הושלם</h2>
+        <p class="subtitle">התשובות שלך נשמרו בהצלחה. כעת ניתן להעתיק אותן או להוריד כקובץ ולשלוח אלינו.</p>
+        
+        <div class="summary-box" id="summary-content">
+            <!-- Summary preview text will go here -->
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="copyToClipboard()">העתק תשובות לקליפבורד</button>
+            <button class="btn-success" onclick="downloadTextFile()">הורד כקובץ טקסט</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questionsData = [
+        {
+            id: 'q1',
+            section: 'חלק 1: קהל היעד והבידול שלך',
+            title: 'מי קהל היעד העיקרי שיגיע לאתר?',
+            subtitle: 'ניתן לבחר יותר מאחד',
+            type: 'checkbox',
+            options: [
+                'שכירים בכירים / מנהלים (שרוצים לעשות אופטימיזציה של מיסוי ותנאים).',
+                'עצמאיים ובעלי עסקים (שצריכים לתכנן את מכירת העסק או העברה בין-דורית).',
+                'פורשים "רגילים" בני 55-67 (שרוצים לדעת כמה כסף יהיה להם בחודש).',
+                'קהל אמיד (High Net Worth) שמחפש ניהול עושר מקיף.'
+            ]
+        },
+        {
+            id: 'q2',
+            section: 'חלק 1: קהל היעד והבידול שלך',
+            title: 'מה הבעיה הכי גדולה או החשש הכי גדול של הלקוחות שמגיעים אליך?',
+            subtitle: 'למשל: "הם מפחדים שייגמר להם הכסף", "הם מבולבלים מכל הניירת והמיסים", "הם לא יודעים מאיפה להתחיל".',
+            type: 'textarea'
+        },
+        {
+            id: 'q3',
+            section: 'חלק 1: קהל היעד והבידול שלך',
+            title: 'למה לקוחות בוחרים דווקא בך ולא במתחרים?',
+            subtitle: 'למשל: הניסיון שלי, הליווי האישי, הידע הייחודי במיסוי, המלצות וכדומה.',
+            type: 'textarea'
+        },
+        {
+            id: 'q4',
+            section: 'חלק 2: מבנה האתר והשירותים',
+            title: 'אילו שירותים יוצגו באתר?',
+            subtitle: 'סמן את כל האפשרויות הרלוונטיות',
+            type: 'checkbox',
+            options: [
+                'תכנון פרישה מקיף (הוליסטי).',
+                'קיבוע זכויות ותכנון מס בפרישה.',
+                'בדיקת כפל ביטוחים ואופטימיזציה של תיק פנסיוני.',
+                'ניהול עושר / השקעות פיננסיות.',
+                'הרצאות / סדנאות לארגונים.'
+            ]
+        },
+        {
+            id: 'q5',
+            section: 'חלק 2: מבנה האתר והשירותים',
+            title: 'מהי הפעולה הכי חשובה שאתה רוצה שהגולש יעשה באתר?',
+            subtitle: 'לבחור אפשרות אחת מרכזית',
+            type: 'radio',
+            options: [
+                'ישאיר פרטים בטופס כדי שאחזור אליו לשיחת אפיון.',
+                'יתאם איתי פגישת היכרות ישירות ביומן דיגיטלי (כמו Calendly).',
+                'יוריד מדריך מקצועי בחינם (כדי שייכנס לרשימת התפוצה שלי).',
+                'יתקשר אליי ישירות בטלפון או ישלח וואטסאפ.'
+            ]
+        },
+        {
+            id: 'q6',
+            section: 'חלק 3: עיצוב, השראה וחומרים קיימים',
+            title: 'איזה סגנון עיצובי אתה מדמיין לאתר שלך?',
+            subtitle: 'בחר את השילוב המועדף',
+            type: 'radio',
+            options: [
+                'מוסדי, סולידי ויוקרתי (צבעי כחול כהה, אפור, זהב, גופנים רציניים).',
+                'מודרני, נקי ונגיש (צבעי לבן, ירוק, תכלת, גופנים עגולים וקלילים יותר).',
+                'אישי וחם (שילוב של צבעי אדמה, תמונות אותנטיות, משדר פגישה בגובה העיניים).'
+            ]
+        },
+        {
+            id: 'q7',
+            section: 'חלק 3: עיצוב, השראה וחומרים קיימים',
+            title: 'השראה מהמתחרים (בארץ או בעולם):',
+            subtitle: 'האם יש 1-2 אתרים (לאו דווקא מהתחום שלך) שאתה אוהב את המראה שלהם או את הנוחות שלהם? אנא צרף קישורים.',
+            type: 'textarea'
+        },
+        {
+            id: 'q8',
+            section: 'חלק 3: עיצוב, השראה וחומרים קיימים',
+            title: 'אילו חומרים כבר יש לך מוכנים?',
+            subtitle: 'סמן את כל מה שקיים',
+            type: 'checkbox',
+            options: [
+                'לוגו וספר מיתוג/צבעים.',
+                'תמונות תדמית מקצועיות שלי.',
+                'המלצות כתובות מלקוחות (או צילומי מסך מוואטסאפ).',
+                'טקסטים או מאמרים שכתבתי בעבר.'
+            ]
+        }
+    ];
+
+    let currentStep = 0;
+    const userAnswers = {};
+
+    function startQuestionnaire() {
+        document.getElementById('intro-screen').classList.add('hidden');
+        document.getElementById('quiz-content').style.display = 'block';
+        renderQuestions();
+        updateStep();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        questionsData.forEach((q, index) => {
+            const card = document.createElement('div');
+            card.className = `question-card ${index === 0 ? 'active' : ''}`;
+            card.id = `step-${index}`;
+
+            const title = document.createElement('h2');
+            title.innerText = q.title;
+            card.appendChild(title);
+
+            if (q.subtitle) {
+                const sub = document.createElement('p');
+                sub.className = 'subtitle';
+                sub.innerText = q.subtitle;
+                card.appendChild(sub);
+            }
+
+            if (q.type === 'textarea') {
+                const textarea = document.createElement('textarea');
+                textarea.placeholder = 'התשובה שלך כאן...';
+                textarea.id = `input-${q.id}`;
+                textarea.value = userAnswers[q.id] || '';
+                textarea.addEventListener('input', (e) => {
+                    userAnswers[q.id] = e.target.value;
+                });
+                card.appendChild(textarea);
+            } else {
+                const grid = document.createElement('div');
+                grid.className = 'options-grid';
+
+                q.options.forEach((opt) => {
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    
+                    const input = document.createElement('input');
+                    input.type = q.type;
+                    input.name = q.id;
+                    input.value = opt;
+
+                    // Restore state if answered
+                    if (q.type === 'checkbox') {
+                        if (userAnswers[q.id] && userAnswers[q.id].includes(opt)) {
+                            input.checked = true;
+                            label.classList.add('selected');
+                        }
+                    } else if (q.type === 'radio') {
+                        if (userAnswers[q.id] === opt) {
+                            input.checked = true;
+                            label.classList.add('selected');
+                        }
+                    }
+
+                    input.addEventListener('change', (e) => {
+                        if (q.type === 'checkbox') {
+                            if (!userAnswers[q.id]) userAnswers[q.id] = [];
+                            if (e.target.checked) {
+                                userAnswers[q.id].push(opt);
+                            } else {
+                                userAnswers[q.id] = userAnswers[q.id].filter(item => item !== opt);
+                            }
+                        } else {
+                            userAnswers[q.id] = opt;
+                        }
+                        
+                        // Update UI selection style
+                        const labels = grid.querySelectorAll('.option-label');
+                        labels.forEach(lbl => {
+                            const inp = lbl.querySelector('input');
+                            if (inp.checked) lbl.classList.add('selected');
+                            else lbl.classList.remove('selected');
+                        });
+                    });
+
+                    label.appendChild(input);
+                    
+                    const txt = document.createElement('span');
+                    txt.className = 'option-text';
+                    txt.innerText = opt;
+                    label.appendChild(txt);
+
+                    grid.appendChild(label);
+                });
+                card.appendChild(grid);
+            }
+
+            container.appendChild(card);
+        });
+    }
+
+    function updateStep() {
+        // Toggle question visibility
+        const cards = document.querySelectorAll('.question-card');
+        cards.forEach((card, idx) => {
+            if (idx === currentStep) card.classList.add('active');
+            else card.classList.remove('active');
+        });
+
+        // Update progress info
+        const q = questionsData[currentStep];
+        document.getElementById('section-tag').innerText = q.section;
+        document.getElementById('step-counter').innerText = `שאלה ${currentStep + 1} מתוך ${questionsData.length}`;
+        
+        const pct = ((currentStep + 1) / questionsData.length) * 100;
+        document.getElementById('progress-bar').style.width = `${pct}%`;
+
+        // Update button text / states
+        const backBtn = document.getElementById('btn-back');
+        const nextBtn = document.getElementById('btn-next');
+
+        backBtn.disabled = currentStep === 0;
+
+        if (currentStep === questionsData.length - 1) {
+            nextBtn.innerText = 'סיום ואפיון';
+            nextBtn.className = 'btn-success';
+        } else {
+            nextBtn.innerText = 'המשך';
+            nextBtn.className = 'btn-primary';
+        }
+    }
+
+    function nextStep() {
+        if (currentStep < questionsData.length - 1) {
+            currentStep++;
+            updateStep();
+        } else {
+            showEndScreen();
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 0) {
+            currentStep--;
+            updateStep();
+        }
+    }
+
+    function generateSummaryText() {
+        let txt = "📋 סיכום שאלון אפיון אתר CFP\n";
+        txt += "====================================\n\n";
+        
+        questionsData.forEach((q) => {
+            txt += `❓ ${q.title}\n`;
+            const ans = userAnswers[q.id];
+            if (!ans || (Array.isArray(ans) && ans.length === 0)) {
+                txt += `↳ לא נענה\n\n`;
+            } else if (Array.isArray(ans)) {
+                ans.forEach(item => {
+                    txt += `  - ${item}\n`;
+                });
+                txt += `\n`;
+            } else {
+                txt += `  ↳ ${ans}\n\n`;
+            }
+        });
+        return txt;
+    }
+
+    function showEndScreen() {
+        document.getElementById('quiz-content').style.display = 'none';
+        const endScreen = document.getElementById('end-screen');
+        endScreen.classList.add('active');
+
+        const summaryContent = document.getElementById('summary-content');
+        const summaryText = generateSummaryText();
+        summaryContent.innerHTML = summaryText.replace(/\n/g, '<br>');
+    }
+
+    function copyToClipboard() {
+        const text = generateSummaryText();
+        navigator.clipboard.writeText(text).then(() => {
+            alert('התשובות הועתקו לקליפבורד בהצלחה! ניתן להדביק בוואטסאפ או במייל.');
+        }).catch(err => {
+            alert('שגיאה בהעתקה, אנא העתק ידנית מהתיבה.');
+        });
+    }
+
+    function downloadTextFile() {
+        const text = generateSummaryText();
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'אפיון_אתר_פרישה_תשובות.txt';
+        link.click();
+    }
+</script>
+
+</body>
+</html>
